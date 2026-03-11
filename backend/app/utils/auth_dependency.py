@@ -9,9 +9,20 @@ def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(securit
 
     token = credentials.credentials
 
-    user_id = verify_token(token)
+    payload = verify_token(token)
 
-    if not user_id:
+    if not payload:
         raise HTTPException(status_code=401, detail="Invalid token")
 
-    return user_id
+    return payload
+
+
+def get_current_admin(current_user = Depends(get_current_user)):
+
+    if current_user["role"] != "admin":
+        raise HTTPException(
+            status_code=403,
+            detail="Admin access required"
+        )
+
+    return current_user

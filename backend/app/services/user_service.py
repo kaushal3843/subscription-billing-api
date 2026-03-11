@@ -1,32 +1,62 @@
 from sqlalchemy.orm import Session
-from app.repositories.user_repository import create_user, get_user_by_email
-from app.utils.jwt_handler import create_access_token
-from app.repositories.user_repository import get_user_by_email
+from fastapi import HTTPException
 
-def register_user(db: Session, name: str, email: str, password: str):
-    
-    existing_user = get_user_by_email(db, email)
+from app.models.user_model import User
+from app.schemas.user_schema import UserCreate, UserLogin
+from app.utils.password import hash_password, verify_password
+from app.utils.jwt_handler import create_access_token
+
+
+def register_user(db: Session, user: UserCreate):
+
+    existing_user = db.query(User).filter(
+        User.email == user.email
+    ).first()
 
     if existing_user:
-        raise Exception("User already exists")
+        raise HTTPException(
+            status_code=400,
+            detail="Email already registered"
+        )
+    
+    hashed_pass = hash_password(user.password)
 
-    user = create_user(db, name, email, password)
+    new_user = User(
+        name=user.name,
+        email=user.email,
+        password=hashed_pass,
+        role = "user"
+    )
 
-    return user
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
 
-def login_user(db, email, password):
+    return new_user
 
-    user = get_user_by_email(db, email)
+def login_user(db: Session, user: UserLogin):
 
-    if not user:
-        raise Exception("User not found")
+    db_user = db.query(User).filter(
+        User.email == user.email
+    ).first()
 
-    if user.password != password:
-        raise Exception("Invalid password")
+    if not db_user:
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid credentials"
+        )
 
-    token = create_access_token({"user_id": user.id})
+    if not verify_password(user.password, db_user.password):
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid credentials"
+        )
 
-    return {
-        "access_token": token,
-        "token_type": "bearer"
-    }
+    token = create_access_token(
+        data = {
+            "user_id" : db_user.id,
+            "role": db_user.role
+        }
+    )
+
+    return {"access_token": token, "token_type": "bearer"}
