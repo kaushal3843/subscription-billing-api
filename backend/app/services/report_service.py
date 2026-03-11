@@ -1,19 +1,15 @@
 from sqlalchemy.orm import Session
-from app.models.subscription_model import Subscription
-from app.models.plan_model import Plan
-
+from app.repositories.report_repository import get_revenue_summary
 
 def revenue_summary(db: Session):
 
-    results = db.query(Plan.price).join(
-        Subscription, Subscription.plan_id == Plan.id
-    ).all()
+    results = get_revenue_summary(db)
 
-    total_revenue = sum([r[0] for r in results])
-
-    total_subscriptions = len(results)
-
-    return {
-        "total_revenue": total_revenue,
-        "total_subscriptions": total_subscriptions
-    }
+    return [
+        {
+            "plan_name": r.plan_name,
+            "subscribers": r.subscribers,
+            "revenue": float(r.revenue)
+        }
+        for r in results
+    ]

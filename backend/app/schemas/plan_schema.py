@@ -5,7 +5,6 @@ class PlanCreate(BaseModel):
     price: float
     duration_days: int
 
-
 class PlanResponse(BaseModel):
     id: int
     name: str

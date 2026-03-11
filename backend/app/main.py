@@ -1,8 +1,8 @@
 from fastapi import FastAPI
 from app.database.database import engine, Base
 from app.models import user_model, plan_model, subscription_model
-from app.routes import auth_routes, plan_routes, subscription_routes
-from app.routes import report_routes
+from app.routes import auth_routes, plan_routes, subscription_routes, report_routes
+
 
 app = FastAPI()
 
