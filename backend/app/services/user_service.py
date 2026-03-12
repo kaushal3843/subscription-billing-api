@@ -59,4 +59,4 @@ def login_user(db: Session, user: UserLogin):
         }
     )
 
-    return {"access_token": token, "token_type": "bearer"}
+    return {"access_token": token, "token_type": "bearer", "role": db_user.role}

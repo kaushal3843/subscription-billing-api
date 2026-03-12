@@ -22,8 +22,7 @@ def subscribe(
     current_user = Depends(get_current_user)
 ):
     user_id = current_user["user_id"]
-    return subscribe_user(db, user_id, plan_id, 30)
-
+    return subscribe_user(db, user_id, plan_id)
 @router.get("/me")
 def get_my_subscription(
     db: Session = Depends(get_db),
