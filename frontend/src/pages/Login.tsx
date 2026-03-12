@@ -22,7 +22,11 @@ export default function Login() {
       localStorage.setItem("token", res.data.access_token);
       localStorage.setItem("role", res.data.role);
       
-      navigate("/dashboard");
+      if (res.data.role === "admin") {
+        navigate("/admin/dashboard"); // Send admin here
+      } else {
+        navigate("/dashboard"); // Send regular users here
+      }
     } catch (error) {
       console.error(error);
       alert("Login failed. Please check your credentials.");

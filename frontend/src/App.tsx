@@ -6,6 +6,8 @@ import Dashboard from "./pages/Dashboard";
 import Plans from "./pages/Plans";
 import MySubscription from "./pages/Mysubscription";
 import AdminPlans from "./pages/Adminplans"; // Make sure this file exists!
+import AdminDashboard from "./pages/AdminDashboard";
+import Navbar from "./components/Sidebar";
 
 function App() {
   // Check the user's role from local storage
@@ -13,6 +15,7 @@ function App() {
 
   return (
     <BrowserRouter>
+    
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/register" element={<Register />} />
@@ -25,6 +28,10 @@ function App() {
   path="/admin/plans" 
   element={<AdminPlans key={window.location.pathname} />} 
         />
+     
+      <Route path="/admin/dashboard" element={<AdminDashboard />} />
+        
+        <Route path="/admin/plans" element={<AdminPlans />} />
       </Routes>
     </BrowserRouter>
   );

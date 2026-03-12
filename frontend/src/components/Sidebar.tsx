@@ -2,52 +2,50 @@ import { useNavigate } from "react-router-dom";
 
 export default function Navbar() {
   const navigate = useNavigate();
-  
-  // 1. Get the user's role from local storage
   const userRole = localStorage.getItem("role");
 
   const logout = () => {
     localStorage.removeItem("token");
-    localStorage.removeItem("role"); // 2. Make sure to clear the role on logout!
+    localStorage.removeItem("role");
     navigate("/");
   };
 
   return (
-    <div className="w-full bg-blue-950 text-white flex items-center justify-between px-10 py-4">
-      
-      <h1 className="text-xl font-bold cursor-pointer"
-          onClick={() => navigate("/dashboard")}>
+    <div className="w-full bg-[#0f172a] text-white flex items-center justify-between px-10 py-4 shadow-md">
+      {/* Clicking the logo takes Admin to Admin Dashboard, User to User Dashboard */}
+      <h1 
+        className="text-xl font-bold cursor-pointer"
+        onClick={() => navigate(userRole === "admin" ? "/admin/dashboard" : "/dashboard")}
+      >
         Subscription App
       </h1>
 
-      <div className="flex gap-8 items-center">
-        
-        <button onClick={() => navigate("/dashboard")} className="hover:text-blue-300 transition">
-          Dashboard
-        </button>
+      <div className="flex gap-6 items-center">
+        {/* Only show these if the user is NOT an admin */}
+        {userRole !== "admin" && (
+          <>
+            <button onClick={() => navigate("/dashboard")} className="hover:text-blue-400">Dashboard</button>
+            <button onClick={() => navigate("/plans")} className="hover:text-blue-400">Plans</button>
+            <button onClick={() => navigate("/subscription")} className="hover:text-blue-400">My Subscription</button>
+          </>
+        )}
 
-        <button onClick={() => navigate("/plans")} className="hover:text-blue-300 transition">
-          Plans
-        </button>
-
-        <button onClick={() => navigate("/subscription")} className="hover:text-blue-300 transition">
-          My Subscription
-        </button>
-
-        {/* 3. Conditionally show the Admin button */}
+        {/* Always show Manage Plans to Admin */}
         {userRole === "admin" && (
           <button 
             onClick={() => navigate("/admin/plans")} 
-            className="text-yellow-400 hover:text-yellow-300 font-semibold transition"
+            className="bg-yellow-600/20 text-yellow-500 px-4 py-1.5 rounded-md border border-yellow-600/50 hover:bg-yellow-600/30 transition"
           >
             Manage Plans
           </button>
         )}
 
-        <button onClick={logout} className="text-red-400 hover:text-red-300 transition ml-4">
+        <button 
+          onClick={logout} 
+          className="bg-red-900/20 text-red-500 px-4 py-1.5 rounded-md border border-red-900/50 hover:bg-red-900/30 transition"
+        >
           Logout
         </button>
-
       </div>
     </div>
   );

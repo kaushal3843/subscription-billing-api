@@ -72,15 +72,23 @@ export default function AdminPlans() {
   };
 
   const handleDelete = async (planId: number) => {
-    if (!window.confirm("Are you sure?")) return;
+    if (!window.confirm("Are you sure you want to delete this plan?")) return;
+  
     try {
       await API.delete(`/plans/${planId}`);
+      alert("Plan deleted successfully");
       fetchPlans();
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
+  
+      // Show backend error message to user
+      if (error.response && error.response.data && error.response.data.detail) {
+        alert(error.response.data.detail);
+      } else {
+        alert("Cannot delete this plan. Users may already be subscribed.");
+      }
     }
   };
-
   const handleEditClick = (plan: any) => {
     setEditingId(plan.id);
     setName(plan.name);
