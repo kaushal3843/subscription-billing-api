@@ -4,7 +4,7 @@ import Navbar from "../components/Sidebar"
 
 function Plans() {
   const [plans, setPlans] = useState<any[]>([])
-  const [activePlanId, setActivePlanId] = useState<number | null>(null) // Track the user's current plan
+  const [activePlanId, setActivePlanId] = useState<number | null>(null) 
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -27,13 +27,11 @@ function Plans() {
 
   const fetchUserSubscription = async () => {
     try {
-      // Assuming you have an endpoint that returns the current user's active sub
       const res = await API.get("/subscriptions/me") 
       if (res.data && res.data.plan_id) {
         setActivePlanId(res.data.plan_id)
       }
     } catch (error) {
-      // If 404 or no sub, just keep it null
       console.log("No active subscription found.")
       setActivePlanId(null)
     }
@@ -43,7 +41,7 @@ function Plans() {
     try {
       await API.post(`/subscriptions/${planId}`)
       alert("Subscribed successfully!")
-      setActivePlanId(planId) // Update UI immediately
+      setActivePlanId(planId) 
     } catch (error: any) {
       const errorMessage = error.response?.data?.detail || "Subscription failed"
       alert(errorMessage)

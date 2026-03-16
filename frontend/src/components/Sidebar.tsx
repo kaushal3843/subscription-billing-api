@@ -12,7 +12,6 @@ export default function Navbar() {
 
   return (
     <div className="w-full bg-[#0f172a] text-white flex items-center justify-between px-10 py-4 shadow-md">
-      {/* Clicking the logo takes Admin to Admin Dashboard, User to User Dashboard */}
       <h1 
         className="text-xl font-bold cursor-pointer"
         onClick={() => navigate(userRole === "admin" ? "/admin/dashboard" : "/dashboard")}
@@ -21,7 +20,6 @@ export default function Navbar() {
       </h1>
 
       <div className="flex gap-6 items-center">
-        {/* Only show these if the user is NOT an admin */}
         {userRole !== "admin" && (
           <>
             <button onClick={() => navigate("/dashboard")} className="hover:text-blue-400">Dashboard</button>
@@ -29,8 +27,6 @@ export default function Navbar() {
             <button onClick={() => navigate("/subscription")} className="hover:text-blue-400">My Subscription</button>
           </>
         )}
-
-        {/* Always show Manage Plans to Admin */}
         {userRole === "admin" && (
           <button 
             onClick={() => navigate("/admin/plans")} 

@@ -8,24 +8,22 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleLogin = async (e: React.SubmitEvent) => {
     e.preventDefault();
     setLoading(true);
     try {
-      // Logic for actual login
       const res = await API.post("/auth/login", {
         email,
         password
       });
 
-      // Saving both token and role for the dynamic navbar logic
       localStorage.setItem("token", res.data.access_token);
       localStorage.setItem("role", res.data.role);
       
       if (res.data.role === "admin") {
-        navigate("/admin/dashboard"); // Send admin here
+        navigate("/admin/dashboard");
       } else {
-        navigate("/dashboard"); // Send regular users here
+        navigate("/dashboard"); 
       }
     } catch (error) {
       console.error(error);
@@ -37,21 +35,15 @@ export default function Login() {
 
   return (
     <div className="min-h-screen w-screen bg-gradient-to-br from-slate-950 via-slate-900 to-blue-900 flex items-center justify-center p-6 overflow-x-hidden font-sans">
-      {/* Background Decoration Circles */}
       <div className="absolute top-20 left-20 w-64 h-64 bg-blue-600/10 rounded-full blur-3xl animate-pulse"></div>
       <div className="absolute bottom-20 right-20 w-80 h-80 bg-indigo-600/10 rounded-full blur-3xl animate-pulse delay-700"></div>
 
       <div className="relative w-full max-w-md">
-        {/* Branding Header */}
         <div className="text-center mb-8">
-         { /*<div className="inline-flex items-center justify-center w-16 h-16 bg-blue-600 rounded-2xl shadow-lg shadow-blue-900/40 mb-4 transform -rotate-6">
-            <span className="text-white text-3xl font-bold">S</span>
-          </div>*/}
           <h1 className="text-white text-3xl font-bold tracking-tight">Subscription App</h1>
           <p className="text-slate-400 mt-2">Welcome back! Please enter your details.</p>
         </div>
 
-        {/* Login Card */}
         <div className="bg-slate-800/40 backdrop-blur-xl border border-slate-700/50 p-8 md:p-10 rounded-3xl shadow-2xl relative z-10">
           <h2 className="text-white text-xl font-semibold mb-8">Login to your account</h2>
           
@@ -80,8 +72,6 @@ export default function Login() {
               />
             </div>
 
-        
-
             <button
               type="submit"
               disabled={loading}
@@ -107,8 +97,6 @@ export default function Login() {
             </p>
           </div>
         </div>
-
-        
       </div>
     </div>
   );

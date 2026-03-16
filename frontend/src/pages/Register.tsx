@@ -9,7 +9,7 @@ export default function Register(): React.JSX.Element {
   const [loading, setLoading] = useState<boolean>(false);
   const navigate = useNavigate();
  
-  const handleRegister = async (e: React.FormEvent) => {
+  const handleRegister = async (e: React.SubmitEvent) => {
     e.preventDefault();
     setLoading(true);
     try {

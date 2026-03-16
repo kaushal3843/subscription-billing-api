@@ -6,11 +6,9 @@ export default function AdminPlans() {
   const [plans, setPlans] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   
-  // --- Revenue Report State ---
   const [report, setReport] = useState<{ total_revenue: number; total_subscriptions: number } | null>(null);
   const [loadingReport, setLoadingReport] = useState(false);
 
-  // Form state
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
   const [durationDays, setDurationDays] = useState("");
@@ -29,7 +27,6 @@ export default function AdminPlans() {
     }
   }, []);
 
-  // --- Function to fetch Revenue Report ---
   const fetchRevenueReport = async () => {
     setLoadingReport(true);
     try {
@@ -47,7 +44,7 @@ export default function AdminPlans() {
     fetchPlans();
   }, [fetchPlans]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.SubmitEvent) => {
     e.preventDefault();
     const planData = {
       name,
@@ -80,8 +77,6 @@ export default function AdminPlans() {
       fetchPlans();
     } catch (error: any) {
       console.error(error);
-  
-      // Show backend error message to user
       if (error.response && error.response.data && error.response.data.detail) {
         alert(error.response.data.detail);
       } else {
@@ -122,11 +117,10 @@ export default function AdminPlans() {
             onClick={fetchRevenueReport}
             className="bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-2 rounded-lg font-bold transition-all shadow-lg flex items-center gap-2"
           >
-            {loadingReport ? "Generating..." : "📊 Generate Report"}
+            {loadingReport ? "Generating..." : "Generate Report"}
           </button>
         </div>
 
-       {/* --- Revenue Report Section --- */}
 {report && Array.isArray(report) && (
   <div className="bg-slate-800 p-8 rounded-2xl shadow-2xl mb-10 border-t-4 border-emerald-500 animate-in fade-in zoom-in duration-300">
     <div className="flex justify-between items-center mb-6">
@@ -139,7 +133,6 @@ export default function AdminPlans() {
       </div>
     </div>
 
-    {/* Scrollable Table for Plan-wise breakdown */}
     <div className="overflow-x-auto rounded-lg border border-slate-700">
       <table className="w-full text-left text-gray-300">
         <thead className="bg-slate-900 text-gray-400 uppercase text-xs font-bold">
@@ -164,7 +157,6 @@ export default function AdminPlans() {
     </div>
   </div>
 )}
-        {/* Form Section */}
         <div className="bg-slate-800 p-6 rounded-xl shadow-lg mb-10 border border-slate-700">
           <h2 className="text-2xl text-white font-semibold mb-4">
             {editingId ? "Edit Mode" : "Create New Plan"}
@@ -204,7 +196,6 @@ export default function AdminPlans() {
           </form>
         </div>
 
-        {/* Plans Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {plans.map((plan) => (
             <div key={plan.id} className="bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-md hover:border-slate-500 transition-all">
