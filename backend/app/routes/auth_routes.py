@@ -8,7 +8,6 @@ from app.services.user_service import login_user
 
 router = APIRouter(prefix="/auth", tags=["Auth"])
 
-
 @router.post("/register")
 def register(user: UserCreate, db: Session = Depends(get_db)):
     new_user = register_user(db,user)
