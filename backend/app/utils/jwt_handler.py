@@ -3,7 +3,6 @@ from jose import jwt, JWTError
 from fastapi import HTTPException
 from app.config import JWT_SECRET_KEY, JWT_ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
 
-
 def create_access_token(data: dict):
 
     to_encode = data.copy()
