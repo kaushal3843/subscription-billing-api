@@ -1,12 +1,15 @@
 import { useNavigate } from "react-router-dom";
+import { getUser, removeToken } from "../utils/token"; 
 
 export default function Navbar() {
   const navigate = useNavigate();
-  const userRole = localStorage.getItem("role");
+  
+  
+  const user = getUser(); 
+  const userRole = user?.role;
 
   const logout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("role");
+    removeToken(); 
     navigate("/");
   };
 
@@ -20,20 +23,23 @@ export default function Navbar() {
       </h1>
 
       <div className="flex gap-6 items-center">
-        {userRole !== "admin" && (
+        {userRole === "user" && (
           <>
             <button onClick={() => navigate("/dashboard")} className="hover:text-blue-400">Dashboard</button>
             <button onClick={() => navigate("/plans")} className="hover:text-blue-400">Plans</button>
             <button onClick={() => navigate("/subscription")} className="hover:text-blue-400">My Subscription</button>
           </>
         )}
+
         {userRole === "admin" && (
-          <button 
-            onClick={() => navigate("/admin/plans")} 
-            className="bg-yellow-600/20 text-yellow-500 px-4 py-1.5 rounded-md border border-yellow-600/50 hover:bg-yellow-600/30 transition"
-          >
-            Manage Plans
-          </button>
+          <>
+            <button 
+              onClick={() => navigate("/admin/plans")} 
+              className="bg-yellow-600/20 text-yellow-500 px-4 py-1.5 rounded-md border border-yellow-600/50 hover:bg-yellow-600/30 transition"
+            >
+              Manage Plans
+            </button>
+          </>
         )}
 
         <button 

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.database.database import get_db
 from app.services.subscription_service import subscribe_user, cancel_subscription
@@ -12,6 +12,11 @@ def cancel(
     db: Session = Depends(get_db),
     current_user = Depends(get_current_user)
 ):
+    if current_user.get("role") == "admin":
+        raise HTTPException(
+            status_code=403, 
+            detail="Admins are not allowed to subscribe to plans"
+        )
     user_id = current_user["user_id"]
     return cancel_subscription(db, user_id)
 

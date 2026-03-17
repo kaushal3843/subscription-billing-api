@@ -18,8 +18,11 @@ export default function Login() {
       });
 
       localStorage.setItem("token", res.data.access_token);
-      localStorage.setItem("role", res.data.role);
-      
+
+
+      localStorage.setItem("user", JSON.stringify({ role: res.data.role }));
+
+
       if (res.data.role === "admin") {
         navigate("/admin/dashboard");
       } else {

@@ -4,10 +4,19 @@ from fastapi import HTTPException
 from app.repositories.subscription_repository import create_subscription
 from app.models.subscription_model import Subscription
 from app.models.plan_model import Plan
+from app.models.user_model import User
 
 def subscribe_user(db: Session, user_id: int, plan_id: int):
 
     try:
+
+        user = db.query(User).filter(User.id == user_id).first()
+        if not user or user.role == "admin":
+            raise HTTPException(
+                status_code=403, 
+                detail="Admins are not allowed to subscribe to plans"
+            )
+        
         existing_subscription = db.query(Subscription).filter(
             Subscription.user_id == user_id,
             Subscription.expiry_date >= date.today()
