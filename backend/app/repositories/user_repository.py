@@ -1,9 +1,7 @@
 from sqlalchemy.orm import Session
-from fastapi import HTTPException
 from app.models.user_model import User
 
 def create_user(db: Session, name: str, email: str, password: str):
-
     try:
         user = User(
             name=name,
@@ -19,10 +17,7 @@ def create_user(db: Session, name: str, email: str, password: str):
 
     except Exception as e:
         db.rollback()
-        raise HTTPException(
-            status_code=500,
-            detail=f"Error creating user: {str(e)}"
-        )
+        raise e
 
 def get_user_by_email(db: Session, email: str):
 
@@ -32,7 +27,4 @@ def get_user_by_email(db: Session, email: str):
         return user
 
     except Exception as e:
-        raise HTTPException(
-            status_code=500,
-            detail=f"Error fetching user: {str(e)}"
-        )
+        raise e

@@ -1,36 +1,39 @@
 from sqlalchemy.orm import Session
-from fastapi import HTTPException
+from fastapi import HTTPException, status
 
-from app.models.user_model import User
 from app.schemas.user_schema import UserCreate, UserLogin
+from app.repositories.user_repository import get_user_by_email, create_user
 from app.utils.password import hash_password, verify_password
 from app.utils.jwt_handler import create_access_token
+
+
+already_exists_exception = HTTPException(
+    status_code=status.HTTP_400_BAD_REQUEST,
+    detail="Email already registered"
+)
+
+invalid_credentials_exception = HTTPException(
+    status_code=status.HTTP_401_UNAUTHORIZED,
+    detail="Invalid credentials"
+)
+
 
 def register_user(db: Session, user: UserCreate):
 
     try:
-        existing_user = db.query(User).filter(
-            User.email == user.email
-        ).first()
+        existing_user = get_user_by_email(db, user.email)
 
         if existing_user:
-            raise HTTPException(
-                status_code=400,
-                detail="Email already registered"
-            )
+            raise already_exists_exception
 
-        hashed_pass = hash_password(user.password)
+        hashed_password = hash_password(user.password)
 
-        new_user = User(
+        new_user = create_user(
+            db,
             name=user.name,
             email=user.email,
-            password=hashed_pass,
-            role="user"
+            password=hashed_password
         )
-
-        db.add(new_user)
-        db.commit()
-        db.refresh(new_user)
 
         return new_user
 
@@ -38,30 +41,22 @@ def register_user(db: Session, user: UserCreate):
         raise
 
     except Exception:
-        db.rollback()
         raise HTTPException(
             status_code=500,
             detail="Service error while registering user"
         )
 
+
 def login_user(db: Session, user: UserLogin):
 
     try:
-        db_user = db.query(User).filter(
-            User.email == user.email
-        ).first()
+        db_user = get_user_by_email(db, user.email)
 
         if not db_user:
-            raise HTTPException(
-                status_code=401,
-                detail="Invalid credentials"
-            )
+            raise invalid_credentials_exception
 
         if not verify_password(user.password, db_user.password):
-            raise HTTPException(
-                status_code=401,
-                detail="Invalid credentials"
-            )
+            raise invalid_credentials_exception
 
         token = create_access_token(
             data={
