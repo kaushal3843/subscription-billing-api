@@ -19,11 +19,19 @@ def get_plan_by_id(db: Session, plan_id: int):
 
 def get_active_subscription(db: Session, user_id: int):
     try:
-        return db.query(Subscription).filter(
-            Subscription.user_id == user_id,
-            Subscription.status == "active",
-            Subscription.expiry_date >= date.today()
-        ).first()
+        subscription = db.query(Subscription).filter(
+        Subscription.user_id == user_id,
+        Subscription.status == "active"
+        ).order_by(Subscription.id.desc()).first()
+
+        if subscription and subscription.expiry_date <= date.today():
+            subscription.status = "expired"
+            db.add(subscription)
+            db.commit()
+            return None
+
+        return subscription
+        
     except Exception as e:
         raise HTTPException(500, f"Error fetching active subscription: {str(e)}")
     
