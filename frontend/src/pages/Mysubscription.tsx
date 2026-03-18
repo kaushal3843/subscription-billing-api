@@ -34,7 +34,7 @@ export default function MySubscription() {
     const cancelSubscription = async () => {
       if (!window.confirm("Are you sure you want to cancel your subscription?")) return;
       try {
-        await API.post("/subscriptions/cancel");
+        await API.patch("/subscriptions/cancel");
         alert("Subscription cancelled successfully!");
         fetchData();
       } catch (error) {
@@ -87,8 +87,7 @@ export default function MySubscription() {
                   <p className="text-slate-500 text-xs font-bold uppercase tracking-widest mb-1">Current Status</p>
                   <div className="flex items-center gap-2">
                     <div className={`w-2.5 h-2.5 rounded-full ${checkStatus(subscription.expiry_date) === "Active" ? "bg-green-400 shadow-[0_0_10px_rgba(74,222,128,0.5)]" : "bg-red-400 shadow-[0_0_10px_rgba(248,113,113,0.5)]"}`}></div>
-                    <p className={`text-xl font-bold ${checkStatus(subscription.expiry_date) === "Active" ? "text-green-400" : "text-red-400"}`}>
-                      {checkStatus(subscription.expiry_date)}
+                    <p className={`text-xl font-bold ${subscription.status === "active" ? "text-green-400" : "text-red-400"}`}>            {subscription.status === "active" ? "Active" : "Cancelled"}
                     </p>
                   </div>
                 </div>

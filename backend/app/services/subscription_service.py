@@ -1,26 +1,28 @@
 from sqlalchemy.orm import Session
 from datetime import date, timedelta
 from fastapi import HTTPException
-from app.repositories.subscription_repository import create_subscription
-from app.models.subscription_model import Subscription
-from app.models.plan_model import Plan
-from app.models.user_model import User
+
+from app.repositories.subscription_repository import (
+    get_user_by_id,
+    get_plan_by_id,
+    get_active_subscription,
+    get_subscription_by_user,
+    create_subscription,
+    update_subscription_status
+)
 
 def subscribe_user(db: Session, user_id: int, plan_id: int):
 
     try:
+        user = get_user_by_id(db, user_id)
 
-        user = db.query(User).filter(User.id == user_id).first()
         if not user or user.role == "admin":
             raise HTTPException(
-                status_code=403, 
+                status_code=403,
                 detail="Admins are not allowed to subscribe to plans"
             )
-        
-        existing_subscription = db.query(Subscription).filter(
-            Subscription.user_id == user_id,
-            Subscription.expiry_date >= date.today()
-        ).first()
+
+        existing_subscription = get_active_subscription(db, user_id)
 
         if existing_subscription:
             raise HTTPException(
@@ -28,28 +30,24 @@ def subscribe_user(db: Session, user_id: int, plan_id: int):
                 detail="User already has an active subscription"
             )
 
-        plan = db.query(Plan).filter(Plan.id == plan_id).first()
+        plan = get_plan_by_id(db, plan_id)
 
         if not plan:
             raise HTTPException(
                 status_code=404,
                 detail="Plan not found"
             )
-
-        duration_days = plan.duration_days
-
+        
         start_date = date.today()
-        expiry_date = start_date + timedelta(days=duration_days)
+        expiry_date = start_date + timedelta(days=plan.duration_days)
 
-        subscription = create_subscription(
+        return create_subscription(
             db,
             user_id,
             plan_id,
             start_date,
             expiry_date
         )
-
-        return subscription
 
     except HTTPException:
         raise
@@ -60,31 +58,26 @@ def subscribe_user(db: Session, user_id: int, plan_id: int):
             detail="Service error while subscribing user"
         )
 
-
 def cancel_subscription(db: Session, user_id: int):
 
     try:
-        subscription = db.query(Subscription).filter(
-            Subscription.user_id == user_id
-        ).first()
+        subscription = get_subscription_by_user(db, user_id)
 
         if not subscription:
             raise HTTPException(
                 status_code=404,
-                detail="Subscription not found"
+                detail="No active subscription found"
             )
 
-        db.delete(subscription)
-        db.commit()
-
-        return {"message": "Subscription cancelled"}
+        return update_subscription_status(db, subscription, "cancelled")
 
     except HTTPException:
         raise
 
     except Exception:
-        db.rollback()
         raise HTTPException(
             status_code=500,
             detail="Service error while cancelling subscription"
         )
+def get_user_subscription(db, user_id):
+    return get_active_subscription(db, user_id)

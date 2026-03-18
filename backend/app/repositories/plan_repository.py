@@ -18,11 +18,7 @@ def create_plan(db: Session, name: str, price: float, duration_days: int):
 
     except Exception as e:
         db.rollback()
-        raise HTTPException(
-            status_code=500,
-            detail=f"Error creating plan: {str(e)}"
-        )
-
+        raise e
 
 def get_all_plans(db: Session):
     try:
@@ -30,11 +26,7 @@ def get_all_plans(db: Session):
         return plans
 
     except Exception as e:
-        raise HTTPException(
-            status_code=500,
-            detail=f"Error fetching plans: {str(e)}"
-        )
-
+        raise e
 
 def update_plan(db: Session, plan_id: int, name: str, price: float, duration_days: int):
     try:
@@ -57,11 +49,7 @@ def update_plan(db: Session, plan_id: int, name: str, price: float, duration_day
 
     except Exception as e:
         db.rollback()
-        raise HTTPException(
-            status_code=500,
-            detail=f"Error updating plan: {str(e)}"
-        )
-
+        raise e
 
 def delete_plan(db: Session, plan_id: int):
     try:

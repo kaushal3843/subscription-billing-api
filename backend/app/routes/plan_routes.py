@@ -11,7 +11,7 @@ router = APIRouter(prefix="/plans", tags=["Plans"])
 def create_plan(
     plan: PlanCreate,
     db: Session = Depends(get_db),
-    admin = Depends(get_current_admin)
+    _ = Depends(get_current_admin)
 ):
     return add_plan(db, plan.name, plan.price, plan.duration_days)
 
@@ -24,7 +24,7 @@ def update_plan_route(
     plan_id: int,
     plan: PlanCreate,
     db: Session = Depends(get_db),
-    admin = Depends(get_current_admin)
+    _ = Depends(get_current_admin)
 ):
     return edit_plan(db, plan_id, plan.name, plan.price, plan.duration_days)
 
@@ -32,6 +32,6 @@ def update_plan_route(
 def delete_plan_route(
     plan_id: int,
     db: Session = Depends(get_db),
-    admin = Depends(get_current_admin)
+    _ = Depends(get_current_admin)
 ):
     return remove_plan(db, plan_id)

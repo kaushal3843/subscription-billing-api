@@ -46,7 +46,6 @@ def edit_plan(db: Session, plan_id: int, name: str, price: float, duration_days:
             detail=f"Service error while updating plan: {str(e)}"
         )
 
-
 def remove_plan(db: Session, plan_id: int):
     try:
         return delete_plan(db, plan_id)
